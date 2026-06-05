@@ -1,0 +1,55 @@
+<UserControl x:Class="AIDevSystem.Views.DashboardView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="500" d:DesignWidth="700">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel>
+            <!-- 摘要卡片 -->
+            <Border Background="#2A2A3E" CornerRadius="6" Padding="20" Margin="0,0,0,16">
+                <TextBlock Text="{Binding SummaryText}" FontSize="16" Foreground="#FBBF24" FontWeight="SemiBold"/>
+            </Border>
+
+            <!-- 评分表格 -->
+            <Border Background="#2A2A3E" CornerRadius="6" Padding="16">
+                <StackPanel>
+                    <TextBlock Text="📊 模型评分统计" FontSize="16" FontWeight="Bold" 
+                               Foreground="#7DF9FF" Margin="0,0,0,12"/>
+
+                    <DataGrid ItemsSource="{Binding Scores}" AutoGenerateColumns="False"
+                              Background="#1E1E2E" Foreground="#E0E0E0"
+                              RowBackground="#1E1E2E" AlternatingRowBackground="#252540"
+                              HeadersVisibility="Column" CanUserAddRows="False"
+                              GridLinesVisibility="Horizontal" HorizontalGridLinesBrush="#333"
+                              BorderThickness="0" SelectionMode="Single">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="模型" Binding="{Binding Model}" Width="100"/>
+                            <DataGridTextColumn Header="难度" Binding="{Binding Difficulty}" Width="80"/>
+                            <DataGridTextColumn Header="任务数" Binding="{Binding TotalTasks}" Width="70"/>
+                            <DataGridTextColumn Header="平均成本" Binding="{Binding AvgCost, StringFormat={}{0:F1}}" Width="80"/>
+                            <DataGridTextColumn Header="平均速度" Binding="{Binding AvgSpeed, StringFormat={}{0:F1}}" Width="80"/>
+                            <DataGridTextColumn Header="通过率" Binding="{Binding AvgPassRate, StringFormat={}{0:F1}}" Width="70"/>
+                            <DataGridTextColumn Header="返工率" Binding="{Binding AvgRework, StringFormat={}{0:F1}}" Width="70"/>
+                            <DataGridTextColumn Header="质量" Binding="{Binding AvgQuality, StringFormat={}{0:F1}}" Width="70"/>
+                            <DataGridTextColumn Header="⭐综合" Binding="{Binding AvgComposite, StringFormat={}{0:F1}}" Width="80">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="FontWeight" Value="Bold"/>
+                                        <Setter Property="Foreground" Value="#FBBF24"/>
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                    <!-- 无数据占位 -->
+                    <TextBlock Text="暂无评分数据" Foreground="#666" FontSize="14"
+                               HorizontalAlignment="Center" Margin="0,20,0,0"
+                               Visibility="{Binding Scores.Count, Converter={StaticResource ZeroToVisConverter}}"/>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

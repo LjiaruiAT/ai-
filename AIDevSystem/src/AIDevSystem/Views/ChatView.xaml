@@ -1,0 +1,99 @@
+<UserControl x:Class="AIDevSystem.Views.ChatView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="clr-namespace:AIDevSystem.Controls">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- 头部 -->
+        <Border Grid.Row="0" Style="{StaticResource CardStyle}" Margin="0,0,0,8">
+            <Grid>
+                <Button Content="← 返回项目" Style="{StaticResource AccentButtonStyle}"
+                        Command="{Binding BackToProjectCommand}" HorizontalAlignment="Left"/>
+                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center"
+                           FontSize="16" FontWeight="Bold" Foreground="#7DF9FF">
+                    <Run Text="💬 讨论: "/><Run Text="{Binding Project.Name}"/>
+                </TextBlock>
+                <Button Content="🗑 清空" Style="{StaticResource DangerButtonStyle}"
+                        Command="{Binding ClearChatCommand}" HorizontalAlignment="Right"
+                        Padding="10,6" FontSize="12"/>
+            </Grid>
+        </Border>
+
+        <!-- 聊天消息 -->
+        <ScrollViewer Grid.Row="1" x:Name="ChatScroll" VerticalScrollBarVisibility="Auto">
+            <ItemsControl ItemsSource="{Binding Messages}" Margin="4">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Grid Margin="0,2">
+                            <!-- 用户消息（右对齐紫色） -->
+                            <Border Style="{StaticResource ChatBubbleUserStyle}"
+                                    Visibility="{Binding Role, Converter={StaticResource RoleToUserVisConverter}}">
+                                <TextBlock Text="{Binding Content}" TextWrapping="Wrap"
+                                           Foreground="White" FontSize="13"/>
+                            </Border>
+                            <!-- PM 消息（左对齐暗色） -->
+                            <Border Style="{StaticResource ChatBubblePmStyle}"
+                                    Visibility="{Binding Role, Converter={StaticResource RoleToPmVisConverter}}">
+                                <TextBlock Text="{Binding Content}" TextWrapping="Wrap"
+                                           Foreground="#E0E0E0" FontSize="13"/>
+                            </Border>
+                            <!-- 系统消息（居中灰色） -->
+                            <TextBlock Text="{Binding Content}" Foreground="#666"
+                                       FontStyle="Italic" FontSize="12"
+                                       HorizontalAlignment="Center"
+                                       TextWrapping="Wrap" Margin="40,4"
+                                       Visibility="{Binding Role, Converter={StaticResource RoleToSystemVisConverter}}"/>
+                        </Grid>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+
+        <!-- 输入栏 -->
+        <Border Grid.Row="2" Style="{StaticResource CardStyle}" Margin="0,8,0,0">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <!-- PM 思考指示器 -->
+                <controls:ActivityIndicator Grid.Row="0"
+                    IsActive="{Binding IsPmThinking}"
+                    StatusText="PM 正在思考..."
+                    Visibility="{Binding IsPmThinking, Converter={StaticResource BoolToVisConverter}}"
+                    Margin="0,4"/>
+                <Grid Grid.Row="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBox Grid.Column="0"
+                             Text="{Binding UserInput, UpdateSourceTrigger=PropertyChanged}"
+                             Style="{StaticResource DarkTextBox}"
+                             IsEnabled="{Binding IsPmThinking, Converter={StaticResource InvertBoolConverter}}"
+                             VerticalContentAlignment="Center"
+                             Margin="0,4">
+                        <TextBox.InputBindings>
+                            <KeyBinding Key="Enter" Command="{Binding SendMessageCommand}"/>
+                        </TextBox.InputBindings>
+                    </TextBox>
+                    <Button Grid.Column="1" Content="发送"
+                            Command="{Binding SendMessageCommand}"
+                            Style="{StaticResource PrimaryButtonStyle}"
+                            Margin="8,0,0,0"/>
+                    <Button Grid.Column="2" Content="✅ 批准并拆解"
+                            Command="{Binding ApproveAndDecomposeCommand}"
+                            Style="{StaticResource SuccessButtonStyle}"
+                            Margin="8,0,0,0"
+                            Visibility="{Binding CanApprove, Converter={StaticResource BoolToVisConverter}}"/>
+                </Grid>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>
